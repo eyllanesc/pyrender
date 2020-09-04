@@ -45,11 +45,34 @@ Scenes
 
 On-Screen Viewer
 ----------------
-.. automodapi:: pyrender.viewer
+
+Base Viewer
+^^^^^^^^^^^
+.. automodapi:: pyrender.backends.base
    :no-inheritance-diagram:
    :no-inherited-members:
    :no-main-docstr:
    :no-heading:
+   :skip: auto, Trackball, TextAlign, Renderer
+   :skip: RenderFlags, PerspectiveCamera, OrthographicCamera, Node
+   :skip: Mesh, IntrinsicsCamera, DirectionalLight, Flag
+
+Qt Viewer
+^^^^^^^^^
+.. automodapi:: pyrender.backends.qt
+   :no-inheritance-diagram:
+   :no-inherited-members:
+   :no-main-docstr:
+   :no-heading:
+
+Pyglet Viewer
+^^^^^^^^^^^^^
+.. automodapi:: pyrender.backends.pyglet
+   :no-inheritance-diagram:
+   :no-inherited-members:
+   :no-main-docstr:
+   :no-heading:
+
 
 Off-Screen Rendering
 --------------------

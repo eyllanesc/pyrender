@@ -10,7 +10,8 @@ from pyrender import PerspectiveCamera,\
                      DirectionalLight, SpotLight, PointLight,\
                      MetallicRoughnessMaterial,\
                      Primitive, Mesh, Node, Scene,\
-                     Viewer, OffscreenRenderer, RenderFlags
+                     OffscreenRenderer, RenderFlags
+from pyrender.backends.pyglet import Viewer
 
 #==============================================================================
 # Mesh creation
@@ -28,8 +29,8 @@ fuze_mesh = Mesh.from_trimesh(fuze_trimesh)
 drill_trimesh = trimesh.load('./models/drill.obj')
 drill_mesh = Mesh.from_trimesh(drill_trimesh)
 drill_pose = np.eye(4)
-drill_pose[0,3] = 0.1
-drill_pose[2,3] = -np.min(drill_trimesh.vertices[:,2])
+drill_pose[0, 3] = 0.1
+drill_pose[2, 3] = -np.min(drill_trimesh.vertices[:, 2])
 
 # Wood trimesh
 wood_trimesh = trimesh.load('./models/wood.obj')
@@ -40,16 +41,16 @@ bottle_gltf = trimesh.load('./models/WaterBottle.glb')
 bottle_trimesh = bottle_gltf.geometry[list(bottle_gltf.geometry.keys())[0]]
 bottle_mesh = Mesh.from_trimesh(bottle_trimesh)
 bottle_pose = np.array([
-    [1.0, 0.0,  0.0, 0.1],
+    [1.0, 0.0, 0.0, 0.1],
     [0.0, 0.0, -1.0, -0.16],
-    [0.0, 1.0,  0.0, 0.13],
-    [0.0, 0.0,  0.0, 1.0],
+    [0.0, 1.0, 0.0, 0.13],
+    [0.0, 0.0, 0.0, 1.0],
 ])
 
 #------------------------------------------------------------------------------
 # Creating meshes with per-vertex colors
 #------------------------------------------------------------------------------
-boxv_trimesh = trimesh.creation.box(extents=0.1*np.ones(3))
+boxv_trimesh = trimesh.creation.box(extents=0.1 * np.ones(3))
 boxv_vertex_colors = np.random.uniform(size=(boxv_trimesh.vertices.shape))
 boxv_trimesh.visual.vertex_colors = boxv_vertex_colors
 boxv_mesh = Mesh.from_trimesh(boxv_trimesh, smooth=False)
@@ -57,7 +58,7 @@ boxv_mesh = Mesh.from_trimesh(boxv_trimesh, smooth=False)
 #------------------------------------------------------------------------------
 # Creating meshes with per-face colors
 #------------------------------------------------------------------------------
-boxf_trimesh = trimesh.creation.box(extents=0.1*np.ones(3))
+boxf_trimesh = trimesh.creation.box(extents=0.1 * np.ones(3))
 boxf_face_colors = np.random.uniform(size=boxf_trimesh.faces.shape)
 boxf_trimesh.visual.face_colors = boxf_face_colors
 boxf_mesh = Mesh.from_trimesh(boxf_trimesh, smooth=False)
@@ -74,8 +75,10 @@ points_mesh = Mesh.from_points(points, colors=point_colors)
 #==============================================================================
 
 direc_l = DirectionalLight(color=np.ones(3), intensity=1.0)
-spot_l = SpotLight(color=np.ones(3), intensity=10.0,
-                   innerConeAngle=np.pi/16, outerConeAngle=np.pi/6)
+spot_l = SpotLight(color=np.ones(3),
+                   intensity=10.0,
+                   innerConeAngle=np.pi / 16,
+                   outerConeAngle=np.pi / 6)
 point_l = PointLight(color=np.ones(3), intensity=10.0)
 
 #==============================================================================
@@ -83,12 +86,10 @@ point_l = PointLight(color=np.ones(3), intensity=10.0)
 #==============================================================================
 
 cam = PerspectiveCamera(yfov=(np.pi / 3.0))
-cam_pose = np.array([
-    [0.0,  -np.sqrt(2)/2, np.sqrt(2)/2, 0.5],
-    [1.0, 0.0,           0.0,           0.0],
-    [0.0,  np.sqrt(2)/2,  np.sqrt(2)/2, 0.4],
-    [0.0,  0.0,           0.0,          1.0]
-])
+cam_pose = np.array([[0.0, -np.sqrt(2) / 2,
+                      np.sqrt(2) / 2, 0.5], [1.0, 0.0, 0.0, 0.0],
+                     [0.0, np.sqrt(2) / 2,
+                      np.sqrt(2) / 2, 0.4], [0.0, 0.0, 0.0, 1.0]])
 
 #==============================================================================
 # Scene creation
@@ -103,7 +104,9 @@ scene = Scene(ambient_light=np.array([0.02, 0.02, 0.02, 1.0]))
 #------------------------------------------------------------------------------
 # By manually creating nodes
 #------------------------------------------------------------------------------
-fuze_node = Node(mesh=fuze_mesh, translation=np.array([0.1, 0.15, -np.min(fuze_trimesh.vertices[:,2])]))
+fuze_node = Node(mesh=fuze_mesh,
+                 translation=np.array(
+                     [0.1, 0.15, -np.min(fuze_trimesh.vertices[:, 2])]))
 scene.add_node(fuze_node)
 boxv_node = Node(mesh=boxv_mesh, translation=np.array([-0.1, 0.10, 0.05]))
 scene.add_node(boxv_node)
@@ -135,7 +138,7 @@ v = Viewer(scene, central_node=drill_node)
 # Rendering offscreen from that camera
 #==============================================================================
 
-r = OffscreenRenderer(viewport_width=640*2, viewport_height=480*2)
+r = OffscreenRenderer(viewport_width=640 * 2, viewport_height=480 * 2)
 color, depth = r.render(scene)
 
 import matplotlib.pyplot as plt
@@ -147,11 +150,10 @@ plt.show()
 # Segmask rendering
 #==============================================================================
 
-nm = {node: 20*(i + 1) for i, node in enumerate(scene.mesh_nodes)}
+nm = {node: 20 * (i + 1) for i, node in enumerate(scene.mesh_nodes)}
 seg = r.render(scene, RenderFlags.SEG, nm)[0]
 plt.figure()
 plt.imshow(seg)
 plt.show()
 
 r.delete()
-
